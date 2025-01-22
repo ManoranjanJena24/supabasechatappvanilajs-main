@@ -9,67 +9,84 @@ let sender = sessionStorage.getItem('sender');
 let receiver;
 let fullName = "";
 
-// Function to render the Chat Page
-// function renderChatPage() {
-//   const appDiv = document.getElementById('app');
 
-//   if (!token) {
-//     appDiv.innerHTML = `
-//       <button onclick="renderLoginPage()">Login</button>
-//       <button onclick="renderSignUpPage()">Sign Up</button>
-//     `;
-//   } else {
-//     appDiv.innerHTML = `
-//       <div class="sidebar" id="user-list">
-//         <h2>Users</h2>
-//         <div id="users-container"></div>
-//       </div>
-//       <div class="main-content">
-//         <h1>Chat Room xyz ${sender}</h1>
-//         <div id="messages-container"></div>
-//         <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
-//         <button onclick="sendMessage()">Send</button>
-//         <button onclick="logout()">Logout</button>
-//       </div>
-//     `;
-//     // Load users and messages
-//     loadUsers();
-//     loadMessages();
-//   }
-// }
+window.addEventListener('DOMContentLoaded', async () => {
+  // Subscribe to the `INSERT` event for new messages
+  const channel = supabase
+    .channel('realtime:messages') // Unique channel name
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'messages' }, // Listen to inserts on the "messages" table
+      (payload) => {
+        // Check if the message is for the current conversation
+        if (
+          // (payload.new.sender_email === sender && payload.new.receiver_email === receiver) 
+          // ||
+          (payload.new.sender_email === receiver && payload.new.receiver_email === sender)
+        ) {
+          // Add the new message to the DOM
+          const messagesContainer = document.getElementById('messages-container');
+          const messageElement = document.createElement('div');
+          messageElement.classList.add('message');
+          if (payload.new.sender_email === sender) {
+            messageElement.classList.add('sent');
+          } else {
+            messageElement.classList.add('received');
+          }
+          messageElement.innerHTML = `
+            <strong>${payload.new.sender_email}</strong>: ${payload.new.content}
+            <br><small>${new Date(payload.new.created_at).toLocaleTimeString()}</small>
+          `;
+          messagesContainer.appendChild(messageElement);
+
+          // Scroll to the latest message
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      }
+    )
+    .subscribe();
+
+  if (!channel) {
+    console.error('Error subscribing to real-time updates.');
+  } else {
+    console.log('Real-time subscription established.');
+  }
+});
+
+
 
 // Function to load users
 async function loadUsers() {
-  const { data, error } = await supabase.auth.admin.listUsers();
-  if (error) {
-    console.error('Error fetching users:', error.message);
-    return;
-  }
+    const { data, error } = await supabase.auth.admin.listUsers();
+    if (error) {
+      console.error('Error fetching users:', error.message);
+      return;
+    }
 
-  const usersContainer = document.getElementById('users-container');
-  usersContainer.innerHTML = ''; // Clear previous users
+    const usersContainer = document.getElementById('users-container');
+    usersContainer.innerHTML = ''; // Clear previous users
 
-  data.users.forEach((user) => {
-    if (user.email === token.user.email) return; // Skip current user
-    const userElement = document.createElement('div');
-    userElement.classList.add('user-item');
-    userElement.innerHTML = `
+    data.users.forEach((user) => {
+      if (user.email === token.user.email) return; // Skip current user
+      const userElement = document.createElement('div');
+      userElement.classList.add('user-item');
+      userElement.innerHTML = `
     <div class="user-info">
        <strong>${user.user_metadata?.full_name || user.email}</strong>
       <small>${user.email}</small>
     </div>
   `;
-    userElement.textContent = user.email;
-    userElement.onclick = () => {
-      receiver = user.email;
-      fullName = user.user_metadata?.full_name || receiver.split('@')[0];
-      document.querySelector('.main-content h1').textContent = `Chat with ${fullName}`;
-      alert(`Chatting with: ${receiver}`);
-      loadMessages();
-    };
-    usersContainer.appendChild(userElement);
-  });
-}
+      userElement.textContent = user.email;
+      userElement.onclick = () => {
+        receiver = user.email;
+        fullName = user.user_metadata?.full_name || receiver.split('@')[0];
+        document.querySelector('.main-content h1').textContent = `Chat with ${fullName}`;
+        // alert(`Chatting with: ${receiver}`);
+        loadMessages();
+      };
+      usersContainer.appendChild(userElement);
+    });
+  }
 
 console.log("receiver2", receiver);
 
@@ -137,55 +154,6 @@ function setToken(data) {
 
 
 
-// function renderChatPage() {
-//   const appDiv = document.getElementById('app');
-
-//   if (!token) {
-//     appDiv.innerHTML = `
-//       <button onclick="renderLoginPage()">Login</button>
-//       <button onclick="renderSignUpPage()">Sign Up</button>
-//     `;
-//   } else {
-//     appDiv.innerHTML = `
-//       <div class="content">
-//         <div class="sidebar" id="user-list">
-//           <h2>Users</h2>
-//           <div id="users-container">
-//             <!-- Example User Items -->
-//             <div class="user-item" onclick="selectUser('John Doe')">
-//               <div class="user-info">
-//                 <strong>John Doe</strong>
-//                 <small>Last online: 2 hours ago</small>
-//               </div>
-//             </div>
-//             <div class="user-item" onclick="selectUser('Jane Smith')">
-//               <div class="user-info">
-//                 <strong>Jane Smith</strong>
-//                 <small>Last online: 5 hours ago</small>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//         <div class="main-content">
-//           <h1>${fullName.length ? fullName : "Chat"}</h1>
-//           <div class="messages-container" id="messages-container"></div>
-//           <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
-//           <div class="chat-actions">
-//             <button onclick="sendMessage()">Send</button>
-//             <button onclick="logout()">Logout</button>
-//           </div>
-//         </div>
-//       </div>
-//     `;
-//     loadUsers();
-//     loadMessages();
-//   }
-// }
-
-
-
-
-
 function renderChatPage() {
   const appDiv = document.getElementById('app');
 
@@ -197,19 +165,7 @@ function renderChatPage() {
         <div class="sidebar" id="user-list">
           <h2>Users</h2>
           <div id="users-container">
-            <!-- Example User Items -->
-            <div class="user-item" onclick="selectUser('John Doe')">
-              <div class="user-info">
-                <strong>John Doe</strong>
-                <small>Last online: 2 hours ago</small>
-              </div>
-            </div>
-            <div class="user-item" onclick="selectUser('Jane Smith')">
-              <div class="user-info">
-                <strong>Jane Smith</strong>
-                <small>Last online: 5 hours ago</small>
-              </div>
-            </div>
+           
           </div>
         </div>
         <div class="main-content">
