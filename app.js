@@ -226,44 +226,6 @@ async function loadMessages() {
 
 
 
-
-// function renderSignUpPage() {
-//   const appDiv = document.getElementById('app');
-//   appDiv.innerHTML = `
-//     <h1>Sign Up</h1>
-//     <form id="signup-form">
-//       <input type="text" id="fullName" placeholder="Full Name" required />
-//       <input type="email" id="email" placeholder="Email" required />
-//       <input type="password" id="password" placeholder="Password" required />
-//       <button type="submit">Sign Up</button>
-//     </form>
-//     <p>Already have an account? <a href="#" onclick="renderLoginPage()">Login</a></p>
-//   `;
-
-//   document.getElementById('signup-form').addEventListener('submit', async (event) => {
-//     event.preventDefault();
-//     const fullName = document.getElementById('fullName').value;
-//     const email = document.getElementById('email').value;
-//     const password = document.getElementById('password').value;
-
-//     try {
-//       const { data, error } = await supabase.auth.signUp({
-//         email,
-//         password,
-//         options: { data: { full_name: fullName } },
-//       });
-//       if (error) throw error;
-//       alert('Please check your email for verification.');
-//     } catch (error) {
-//       alert(error.message);
-//     }
-//   });
-// }
-
-
-
-
-
 function renderSignUpPage() {
   const appDiv = document.getElementById('app');
   appDiv.innerHTML = `
