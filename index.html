@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Chat App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Navbar or Header -->
+    <div class="navbar">
+      <h1>Chat App</h1>
+    </div>
+
+    <!-- Sidebar and Chat Container -->
+    <div class="content">
+      <div class="sidebar" id="user-list">
+        <h2>Users</h2>
+        <div id="users-container"></div>
+      </div>
+      <div class="chat">
+        <div class="chat-header">
+          <h2 id="chat-title">Welcome!</h2>
+        </div>
+        <div id="messages-container" class="messages-container"></div>
+        <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
+        <div class="chat-actions">
+          <button onclick="sendMessage()">Send</button>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
