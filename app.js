@@ -104,7 +104,7 @@ async function sendMessage() {
     return;
   }
 
-  alert(`message1`);
+  // alert(`message1`);
 
   const { data, error } = await supabase
     .from('messages')
@@ -154,6 +154,39 @@ function setToken(data) {
 
 
 
+// function renderChatPage() {
+//   const appDiv = document.getElementById('app');
+
+//   if (!token) {
+//     renderLoginPage();
+//   } else {
+//     appDiv.innerHTML = `
+//       <div class="content">
+//         <div class="sidebar" id="user-list">
+//           <h2>Users</h2>
+//           <div id="users-container">
+           
+//           </div>
+//         </div>
+//         <div class="main-content">
+//           <h1>${fullName.length ? fullName : "Chat"}</h1>
+//           <div class="messages-container" id="messages-container"></div>
+//           <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
+//           <div class="chat-actions">
+//             <button onclick="sendMessage()">Send</button>
+//             <button onclick="logout()">Logout</button>
+//           </div>
+//         </div>
+//       </div>
+//     `;
+//     loadUsers();
+//     loadMessages();
+//   }
+// }
+
+
+
+
 function renderChatPage() {
   const appDiv = document.getElementById('app');
 
@@ -165,16 +198,20 @@ function renderChatPage() {
         <div class="sidebar" id="user-list">
           <h2>Users</h2>
           <div id="users-container">
-           
           </div>
         </div>
         <div class="main-content">
-          <h1>${fullName.length ? fullName : "Chat"}</h1>
+          <div class="chat-header">
+            <h1>${fullName.length ? fullName : "Chat"}</h1>
+            <div class="top-right-actions">
+              <button onclick="logout()" title="Logout">Logout</button>
+             
+            </div>
+          </div>
           <div class="messages-container" id="messages-container"></div>
           <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
           <div class="chat-actions">
             <button onclick="sendMessage()">Send</button>
-            <button onclick="logout()">Logout</button>
           </div>
         </div>
       </div>
@@ -225,7 +262,6 @@ async function loadMessages() {
 
 
 
-
 function renderSignUpPage() {
   const appDiv = document.getElementById('app');
   appDiv.innerHTML = `
@@ -266,23 +302,7 @@ function renderSignUpPage() {
 
 
 
-
-
 // Function to render the Login page
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
