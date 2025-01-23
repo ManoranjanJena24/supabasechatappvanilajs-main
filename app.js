@@ -7,6 +7,7 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseroleKey);
 let users;
 let sender = sessionStorage.getItem('sender');
 let receiver;
+let receiver_fullname;
 let fullName = "";
 
 
@@ -34,7 +35,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             messageElement.classList.add('received');
           }
           messageElement.innerHTML = `
-            <strong>${payload.new.sender_email}</strong>: ${payload.new.content}
+            <strong>${payload.new.sender_fullname}</strong>: ${payload.new.content}
             <br><small>${new Date(payload.new.created_at).toLocaleTimeString()}</small>
           `;
           messagesContainer.appendChild(messageElement);
@@ -66,19 +67,33 @@ async function loadUsers() {
     const usersContainer = document.getElementById('users-container');
     usersContainer.innerHTML = ''; // Clear previous users
 
+
+    console.log("data24", data);
+    console.log("data25", data.users.user_metadata);
+
+
+
     data.users.forEach((user) => {
-      if (user.email === token.user.email) return; // Skip current user
+
+      console.log("user.user_metadata?.full_name", user.user_metadata?.full_name);
+      console.log("token.user.full_name", token.user.user_metadata?.full_name);
+      // if (user.email === token.user.email) return; // Skip current user
+      if (user.user_metadata?.full_name === token.user.user_metadata?.full_name) return; 
+      
       const userElement = document.createElement('div');
       userElement.classList.add('user-item');
       userElement.innerHTML = `
     <div class="user-info">
-       <strong>${user.user_metadata?.full_name || user.email}</strong>
-      <small>${user.email}</small>
+       <strong>${user.user_metadata?.full_name }</strong>
+      <small>${user.user_metadata?.full_name }</small>
+    
     </div>
   `;
-      userElement.textContent = user.email;
+      userElement.textContent = user.user_metadata?.full_name;
       userElement.onclick = () => {
+        console.log("user69", user);
         receiver = user.email;
+        receiver_fullname = user.user_metadata?.full_name;
         fullName = user.user_metadata?.full_name || receiver.split('@')[0];
         document.querySelector('.main-content h1').textContent = `Chat with ${fullName}`;
         // alert(`Chatting with: ${receiver}`);
@@ -88,7 +103,7 @@ async function loadUsers() {
     });
   }
 
-console.log("receiver2", receiver);
+console.log("receiver211", receiver);
 
 // Function to send a new message (with sender and receiver)
 async function sendMessage() {
@@ -113,6 +128,8 @@ async function sendMessage() {
         sender_email: token.user.email,
         receiver_email: receiver,
         content: messageContent,
+        sender_fullname: token.user.user_metadata.full_name,
+        receiver_fullname: receiver_fullname,
       },
     ]);
 
@@ -150,39 +167,6 @@ function setToken(data) {
   renderChatPage();
 }
 
-
-
-
-
-// function renderChatPage() {
-//   const appDiv = document.getElementById('app');
-
-//   if (!token) {
-//     renderLoginPage();
-//   } else {
-//     appDiv.innerHTML = `
-//       <div class="content">
-//         <div class="sidebar" id="user-list">
-//           <h2>Users</h2>
-//           <div id="users-container">
-           
-//           </div>
-//         </div>
-//         <div class="main-content">
-//           <h1>${fullName.length ? fullName : "Chat"}</h1>
-//           <div class="messages-container" id="messages-container"></div>
-//           <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
-//           <div class="chat-actions">
-//             <button onclick="sendMessage()">Send</button>
-//             <button onclick="logout()">Logout</button>
-//           </div>
-//         </div>
-//       </div>
-//     `;
-//     loadUsers();
-//     loadMessages();
-//   }
-// }
 
 
 
@@ -226,7 +210,7 @@ function renderChatPage() {
 async function loadMessages() {
   const { data, error } = await supabase
     .from('messages')
-    .select('sender_email, receiver_email, content, created_at')
+    .select('sender_email, receiver_email, sender_fullname, content, created_at')
     .or(
       `and(sender_email.eq.${sender},receiver_email.eq.${receiver}),and(sender_email.eq.${receiver},receiver_email.eq.${sender})`
     )
@@ -243,6 +227,7 @@ async function loadMessages() {
   messagesContainer.innerHTML = ''; // Clear previous messages
 
   data.forEach((message) => {
+    console.log("262 msggggggggggggg",message);
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     if (message.sender_email === sender) {
@@ -251,7 +236,7 @@ async function loadMessages() {
       messageElement.classList.add('received');
     }
     messageElement.innerHTML = `
-      <strong>${message.sender_email}</strong>: ${message.content}
+      <strong>${message.sender_fullname}</strong>: ${message.content}
       <br><small>${new Date(message.created_at).toLocaleTimeString()}</small>
     `;
     messagesContainer.appendChild(messageElement);
