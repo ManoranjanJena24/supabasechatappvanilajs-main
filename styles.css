@@ -86,7 +86,7 @@ body {
 }
 
 textarea {
-  width: 100%;
+  width: 99%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -122,6 +122,9 @@ button:hover {
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #f9f9f9;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  height: 400px;
 }
 
 .message {

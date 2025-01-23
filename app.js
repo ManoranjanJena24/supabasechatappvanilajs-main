@@ -82,13 +82,6 @@ async function loadUsers() {
       
       const userElement = document.createElement('div');
       userElement.classList.add('user-item');
-      userElement.innerHTML = `
-    <div class="user-info">
-       <strong>${user.user_metadata?.full_name }</strong>
-      <small>${user.user_metadata?.full_name }</small>
-    
-    </div>
-  `;
       userElement.textContent = user.user_metadata?.full_name;
       userElement.onclick = () => {
         console.log("user69", user);
@@ -168,9 +161,6 @@ function setToken(data) {
 }
 
 
-
-
-
 function renderChatPage() {
   const appDiv = document.getElementById('app');
 
@@ -193,7 +183,7 @@ function renderChatPage() {
             </div>
           </div>
           <div class="messages-container" id="messages-container"></div>
-          <textarea id="message-input" placeholder="Type a message..." rows="4"></textarea>
+          <textarea id="message-input" placeholder="Type a message..." rows="4"  onkeydown="handleKeyDown(event)"></textarea>
           <div class="chat-actions">
             <button onclick="sendMessage()">Send</button>
           </div>
@@ -202,6 +192,14 @@ function renderChatPage() {
     `;
     loadUsers();
     loadMessages();
+  }
+}
+
+function handleKeyDown(event) {
+  // Check if the Enter key is pressed (and not with Shift for a new line)
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault(); // Prevent adding a new line
+    sendMessage(); // Call the sendMessage function
   }
 }
 
@@ -221,7 +219,7 @@ async function loadMessages() {
     return;
   }
   console.log("message data", data);
-  console.log("sender", sender, "receiver", receiver);
+  console.log("sender24", sender, "receiver", receiver);
 
   const messagesContainer = document.getElementById('messages-container');
   messagesContainer.innerHTML = ''; // Clear previous messages
@@ -241,10 +239,15 @@ async function loadMessages() {
     `;
     messagesContainer.appendChild(messageElement);
   });
+ 
+
+  setTimeout(() => {
+    messagesContainer.scrollTo({
+      top: 200, // Arbitrary value to test scrolling
+      behavior: 'smooth',
+    });
+  }, 1000);
 }
-
-
-
 
 
 function renderSignUpPage() {
@@ -285,12 +288,7 @@ function renderSignUpPage() {
 }
 
 
-
-
 // Function to render the Login page
-
-
-
 
 function renderLoginPage() {
   const appDiv = document.getElementById('app');
@@ -326,37 +324,6 @@ function renderLoginPage() {
   });
 }
 
-
-
-// function renderLoginPage() {
-//   const appDiv = document.getElementById('app');
-//   appDiv.innerHTML = `
-//     <h1>Login</h1>
-//     <form id="login-form">
-//       <input type="email" id="email" placeholder="Email" required />
-//       <input type="password" id="password" placeholder="Password" required />
-//       <button type="submit">Login</button>
-//     </form>
-//     <p>Don't have an account? <a href="#" onclick="renderSignUpPage()">Sign Up</a></p>
-//   `;
-
-//   document.getElementById('login-form').addEventListener('submit', async (event) => {
-//     event.preventDefault();
-//     const email = document.getElementById('email').value;
-//     const password = document.getElementById('password').value;
-
-//     try {
-//       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-//       if (error) throw error;
-//       console.log("login data", data);
-//       sender = data.user.email;
-//       console.log("sender", sender);
-//       setToken(data);
-//     } catch (error) {
-//       alert(error.message);
-//     }
-//   });
-// }
 
 
 
