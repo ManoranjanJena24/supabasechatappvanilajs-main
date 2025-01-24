@@ -243,7 +243,7 @@ async function loadMessages() {
 
   setTimeout(() => {
     messagesContainer.scrollTo({
-      top: messagesContainer.scrollHeight, // Arbitrary value to test scrolling
+      top: messagesContainer.scrollHeight, 
       behavior: 'smooth',
     });
   }, 500);
